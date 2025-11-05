@@ -11,8 +11,11 @@ __pycache__/
 .venv/
 env/
 venv/
-*.env*
-.env_example
+*.env
+.env.*
+
+# Allow .env.example to be tracked
+!.env.example
 
 
 # Build / Distribution
