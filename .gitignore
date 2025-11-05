@@ -63,7 +63,9 @@ ignore_this.txt
 *.ignore.*
 
 # unit-test files
+# Note: Exclude test_setup.py as it's the official setup verification script
 test_*
+!test_setup.py
 run_indexer_with_filtering.py
 
 # Cline files
