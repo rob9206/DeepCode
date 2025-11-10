@@ -6,9 +6,13 @@ Command Executor MCP Tool / 命令执行器 MCP 工具
 Specialized in executing LLM-generated shell commands to create file tree structures
 """
 
+import os
+import re
+import shlex
+import shutil
 import subprocess
 from pathlib import Path
-from typing import List, Dict
+from typing import Dict, List, Optional, Sequence, Tuple
 from mcp.server.models import InitializationOptions
 import mcp.types as types
 from mcp.server import NotificationOptions, Server
@@ -16,6 +20,193 @@ import mcp.server.stdio
 
 # 创建MCP服务器实例 / Create MCP server instance
 app = Server("command-executor")
+
+ShellArgs = Sequence[str] | str
+ShellSelection = Tuple[ShellArgs, bool, str, Optional[str]]
+
+_POSIX_COMMAND_KEYWORDS = {
+    "touch",
+    "chmod",
+    "chown",
+    "ln",
+    "sed",
+    "awk",
+    "grep",
+    "rm",
+    "cp",
+    "mv",
+    "ls",
+    "pwd",
+    "cat",
+    "tar",
+    "make",
+    "head",
+    "tail",
+    "find",
+}
+
+_POSIX_PATTERNS = (
+    "mkdir -p",
+    "rm -rf",
+    "rm -r",
+    "cat <<",
+    "export ",
+    "source ",
+    "set -e",
+    "unset ",
+    "ln -s",
+    "cp -r",
+    "mv -f",
+    "chmod +",
+)
+
+_POSIX_SHELL_PREFIXES = ("bash ", "sh ", "zsh ", "fish ")
+
+_POWERSHELL_KEYWORDS = {
+    "new-item",
+    "set-content",
+    "get-childitem",
+    "test-path",
+    "write-host",
+    "copy-item",
+    "move-item",
+    "remove-item",
+    "get-content",
+    "start-process",
+    "stop-process",
+    "out-file",
+    "join-path",
+    "split-path",
+    "convertto-json",
+    "convertfrom-json",
+    "get-service",
+    "set-location",
+    "invoke-expression",
+    "set-variable",
+}
+
+_POWERSHELL_INDICATORS = (".ps1", "-command", "-noprofile", "-executionpolicy")
+
+
+def _safe_tokenize(command: str) -> List[str]:
+    """Best-effort tokenization that tolerates unmatched quotes."""
+    try:
+        return shlex.split(command, posix=True)
+    except ValueError:
+        return command.split()
+
+
+def _looks_like_powershell(command: str) -> bool:
+    """Heuristic to determine if a command expects PowerShell."""
+    lowered = command.strip().lower()
+    if not lowered:
+        return False
+
+    if lowered.startswith(("powershell", "pwsh")):
+        return True
+
+    for indicator in _POWERSHELL_INDICATORS:
+        if indicator in lowered:
+            return True
+
+    for keyword in _POWERSHELL_KEYWORDS:
+        if keyword in lowered:
+            return True
+
+    return False
+
+
+def _looks_like_posix(command: str) -> bool:
+    """Heuristic to determine if a command expects a POSIX-style shell."""
+    stripped = command.strip()
+    if not stripped:
+        return False
+
+    lowered = stripped.lower()
+
+    for prefix in _POSIX_SHELL_PREFIXES:
+        if lowered.startswith(prefix):
+            return True
+
+    for pattern in _POSIX_PATTERNS:
+        if pattern in lowered:
+            return True
+
+    tokens = _safe_tokenize(lowered)
+    if not tokens:
+        return False
+
+    first_token = tokens[0]
+    if first_token in _POSIX_COMMAND_KEYWORDS:
+        if first_token != "mkdir":
+            return True
+        if any(token.startswith("-") for token in tokens[1:]) or "mkdir -p" in lowered:
+            return True
+
+    for token in tokens[1:]:
+        if token.startswith("-"):
+            continue
+        if token in _POSIX_COMMAND_KEYWORDS:
+            return True
+
+    if ("&&" in stripped or "||" in stripped or ";" in stripped) and any(
+        token in _POSIX_COMMAND_KEYWORDS for token in tokens
+    ):
+        return True
+
+    return False
+
+
+def select_shell_for_command(command: str) -> ShellSelection:
+    """Select the most suitable shell for executing *command*."""
+    stripped = command.strip()
+    note: Optional[str] = None
+
+    if not stripped:
+        return stripped, True, "system", None
+
+    lowered_first = stripped.split()[0].lower()
+    if lowered_first in {"powershell", "pwsh", "cmd", "cmd.exe", "bash", "sh", "wsl"}:
+        return stripped, True, lowered_first, None
+
+    if os.name == "nt":
+        if _looks_like_powershell(stripped):
+            powershell_path = shutil.which("powershell") or shutil.which("pwsh")
+            if powershell_path:
+                return (
+                    [
+                        powershell_path,
+                        "-NoLogo",
+                        "-NoProfile",
+                        "-ExecutionPolicy",
+                        "Bypass",
+                        "-Command",
+                        stripped,
+                    ],
+                    False,
+                    "powershell",
+                    None,
+                )
+
+        if _looks_like_posix(stripped):
+            bash_path = shutil.which("bash")
+            if bash_path:
+                return ([bash_path, "-lc", stripped], False, "bash", None)
+            note = "bash shell not found; falling back to cmd.exe"
+
+        return stripped, True, "cmd", note
+
+    if _looks_like_powershell(stripped):
+        pwsh_path = shutil.which("pwsh") or shutil.which("powershell")
+        if pwsh_path:
+            return (
+                [pwsh_path, "-NoLogo", "-NoProfile", "-Command", stripped],
+                False,
+                "pwsh",
+                None,
+            )
+
+    return stripped, True, "posix", None
 
 
 @app.list_tools()
@@ -130,6 +321,8 @@ async def execute_command_batch(
         # 确保工作目录存在 / Ensure working directory exists
         Path(working_directory).mkdir(parents=True, exist_ok=True)
 
+        shell_args, use_shell, shell_name, shell_note = select_shell_for_command(command)
+
         # 分割命令行 / Split command lines
         command_lines = [
             cmd.strip() for cmd in commands.strip().split("\n") if cmd.strip()
@@ -146,11 +339,15 @@ async def execute_command_batch(
         stats = {"successful": 0, "failed": 0, "timeout": 0}
 
         for i, command in enumerate(command_lines, 1):
+            shell_args, use_shell, shell_name, shell_note = select_shell_for_command(
+                command
+            )
+            shell_label = f" [{shell_name}]" if shell_name else ""
             try:
                 # 执行命令 / Execute command
                 result = subprocess.run(
-                    command,
-                    shell=True,
+                    shell_args,
+                    shell=use_shell,
                     cwd=working_directory,
                     capture_output=True,
                     text=True,
@@ -158,21 +355,27 @@ async def execute_command_batch(
                 )
 
                 if result.returncode == 0:
-                    results.append(f"✅ Command {i}: {command}")
+                    results.append(f"✅ Command {i}{shell_label}: {command}")
                     if result.stdout.strip():
                         results.append(f"   输出 / Output: {result.stdout.strip()}")
                     stats["successful"] += 1
                 else:
-                    results.append(f"❌ Command {i}: {command}")
+                    results.append(f"❌ Command {i}{shell_label}: {command}")
                     if result.stderr.strip():
                         results.append(f"   错误 / Error: {result.stderr.strip()}")
                     stats["failed"] += 1
+                if shell_note:
+                    results.append(f"   Note: {shell_note}")
 
             except subprocess.TimeoutExpired:
-                results.append(f"⏱️ Command {i} 超时 / timeout: {command}")
+                results.append(f"⏱️ Command {i}{shell_label} 超时 / timeout: {command}")
+                if shell_note:
+                    results.append(f"   Note: {shell_note}")
                 stats["timeout"] += 1
             except Exception as e:
-                results.append(f"💥 Command {i} 异常 / exception: {command} - {str(e)}")
+                results.append(f"💥 Command {i}{shell_label} 异常 / exception: {command} - {str(e)}")
+                if shell_note:
+                    results.append(f"   Note: {shell_note}")
                 stats["failed"] += 1
 
         # 生成执行报告 / Generate execution report
@@ -207,10 +410,12 @@ async def execute_single_command(
         # 确保工作目录存在 / Ensure working directory exists
         Path(working_directory).mkdir(parents=True, exist_ok=True)
 
+        shell_args, use_shell, shell_name, shell_note = select_shell_for_command(command)
+
         # 执行命令 / Execute command
         result = subprocess.run(
-            command,
-            shell=True,
+            shell_args,
+            shell=use_shell,
             cwd=working_directory,
             capture_output=True,
             text=True,
@@ -218,20 +423,22 @@ async def execute_single_command(
         )
 
         # 格式化输出 / Format output
-        output = format_single_command_result(command, working_directory, result)
+        output = format_single_command_result(command, working_directory, result, shell_name, shell_note)
 
         return [types.TextContent(type="text", text=output)]
 
     except subprocess.TimeoutExpired:
+        note = f"\nNote: {shell_note}" if shell_note else ""
         return [
             types.TextContent(
-                type="text", text=f"⏱️ 命令超时 / Command timeout: {command}"
+                type="text", text=f"⏱️ 命令超时 / Command timeout: {command}{note}"
             )
         ]
     except Exception as e:
+        note = f"\nNote: {shell_note}" if shell_note else ""
         return [
             types.TextContent(
-                type="text", text=f"💥 命令执行错误 / Command execution error: {str(e)}"
+                type="text", text=f"💥 命令执行错误 / Command execution error: {str(e)}{note}"
             )
         ]
 
@@ -264,7 +471,11 @@ def generate_execution_summary(
 
 
 def format_single_command_result(
-    command: str, working_directory: str, result: subprocess.CompletedProcess
+    command: str,
+    working_directory: str,
+    result: subprocess.CompletedProcess,
+    shell_name: str,
+    shell_note: Optional[str],
 ) -> str:
     """
     格式化单命令执行结果 / Format single command execution result
@@ -285,6 +496,12 @@ def format_single_command_result(
 返回码 / Return Code: {result.returncode}
 
 """
+
+    shell_display = shell_name or "system-default"
+    output += f"Shell / Interpreter: {shell_display}\n"
+    if shell_note:
+        output += f"Shell Note: {shell_note}\n"
+    output += "\n"
 
     if result.returncode == 0:
         output += "✅ 状态 / Status: SUCCESS / 成功\n"

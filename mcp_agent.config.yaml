@@ -83,6 +83,15 @@ mcp:
       command: python
       env:
         PYTHONPATH: .
+    snyk-code-analyzer:
+      args:
+      - tools/snyk_code_analyzer.py
+      command: python
+      description: Snyk Code security analyzer - Provides automated security and quality analysis for generated code
+      env:
+        PYTHONPATH: .
+        SNYK_TOKEN: ''
+        SNYK_ORG_ID: ''
 openai:
   base_max_tokens: 20000
   default_model: google/gemini-2.5-pro
