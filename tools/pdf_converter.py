@@ -56,8 +56,8 @@ class PDFConverter:
             Path to the generated PDF file
         """
         try:
-            # Convert to Path object for easier handling
-            doc_path = Path(doc_path)
+            # Convert to Path object for easier handling and normalize
+            doc_path = Path(doc_path).expanduser().resolve(strict=False)
             if not doc_path.exists():
                 raise FileNotFoundError(f"Office document does not exist: {doc_path}")
 
@@ -65,7 +65,7 @@ class PDFConverter:
 
             # Prepare output directory
             if output_dir:
-                base_output_dir = Path(output_dir)
+                base_output_dir = Path(output_dir).expanduser().resolve(strict=False)
             else:
                 base_output_dir = doc_path.parent / "pdf_output"
 
@@ -249,7 +249,7 @@ class PDFConverter:
             Path to the generated PDF file
         """
         try:
-            text_path = Path(text_path)
+            text_path = Path(text_path).expanduser().resolve(strict=False)
             if not text_path.exists():
                 raise FileNotFoundError(f"Text file does not exist: {text_path}")
 
@@ -279,7 +279,7 @@ class PDFConverter:
 
             # Prepare output directory
             if output_dir:
-                base_output_dir = Path(output_dir)
+                base_output_dir = Path(output_dir).expanduser().resolve(strict=False)
             else:
                 base_output_dir = text_path.parent / "pdf_output"
 

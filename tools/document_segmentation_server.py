@@ -990,7 +990,9 @@ class DocumentSegmenter:
     ) -> DocumentSegment:
         """Create enhanced document segment"""
         # Generate unique ID
-        segment_id = hashlib.md5(
+        # Use SHA-256 instead of MD5 for generating the segment id hash
+        import hashlib
+        segment_id = hashlib.sha256(
             f"{title}_{start_pos}_{end_pos}_{importance_score}".encode()
         ).hexdigest()[:8]
 
@@ -1269,9 +1271,11 @@ class DocumentSegmenter:
     ) -> DocumentSegment:
         """Create a DocumentSegment with metadata"""
         # Generate unique ID
-        segment_id = hashlib.md5(f"{title}_{start_pos}_{end_pos}".encode()).hexdigest()[
-            :8
-        ]
+        # Use SHA-256 instead of MD5 for generating the segment id hash
+        import hashlib
+        segment_id = hashlib.sha256(
+            f"{title}_{start_pos}_{end_pos}".encode()
+        ).hexdigest()[:8]
 
         # Extract keywords from content
         keywords = self._extract_keywords(content)

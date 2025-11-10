@@ -1,0 +1,199 @@
+
+Testing C:\DynoAI\DeepCode ...
+
+Open Issues
+
+ âœ— [MEDIUM] Command Injection
+   Finding ID: 9c5cb621-fd70-4673-a374-3b39722c5daa
+   Path: tools/code_implementation_server.py, line 811
+   Info: Unsanitized input from an MCP Server flows into subprocess.run, where it is used as a shell command. This may result in a Command Injection vulnerability.
+
+ âœ— [MEDIUM] Command Injection
+   Finding ID: 6f5e40d3-618c-434f-bf7c-655a417ea048
+   Path: tools/code_implementation_server.py, line 821
+   Info: Unsanitized input from an MCP Server flows into subprocess.run, where it is used as a shell command. This may result in a Command Injection vulnerability.
+
+ âœ— [MEDIUM] Command Injection
+   Finding ID: cb91d01c-e181-4399-92b8-586b8d56185d
+   Path: tools/run_snyk_scans.py, line 104
+   Info: Unsanitized input from an environment variable flows into subprocess.run, where it is used as a shell command. This may result in a Command Injection vulnerability.
+
+ âœ— [MEDIUM] Command Injection
+   Finding ID: 60b23f66-9785-4ebb-84a2-d1e36fe20008
+   Path: tools/run_snyk_scans.py, line 151
+   Info: Unsanitized input from an environment variable flows into subprocess.run, where it is used as a shell command. This may result in a Command Injection vulnerability.
+
+ âœ— [MEDIUM] Command Injection
+   Finding ID: 714346f1-4d61-4908-b396-d8876172da02
+   Path: tools/run_snyk_scans.py, line 180
+   Info: Unsanitized input from an environment variable flows into subprocess.run, where it is used as a shell command. This may result in a Command Injection vulnerability.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: da573e0b-dc18-43f2-8a7f-b624cc1b3531
+   Path: tools/pdf_converter.py, line 229
+   Info: Unsanitized input from a command line argument flows into shutil.copy2, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to write arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: 716bb706-15db-4cc5-9da5-2cb430d518c5
+   Path: tools/run_snyk_scans.py, line 119
+   Info: Unsanitized input from a command line argument flows into pathlib.Path, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to write arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: 74fc1753-af78-43f8-908f-5fc787438bde
+   Path: tools/snyk_code_analyzer.py, line 283
+   Info: Unsanitized input from a command line argument flows into pathlib.Path, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to write arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: 9142d574-129b-40fe-9d1d-87e21747cad6
+   Path: workflows/snyk_integration_workflow.py, line 78
+   Info: Unsanitized input from a command line argument flows into pathlib.Path, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to write arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: 63fbc4f0-795d-4f85-9a2d-eef9232c3559
+   Path: tools/run_snyk_scans.py, line 147
+   Info: Unsanitized input from a command line argument flows into path concatenation, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to write arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: e398bcdc-3ce1-4dcb-8014-b84a5d9086aa
+   Path: tools/run_snyk_scans.py, line 177
+   Info: Unsanitized input from a command line argument flows into path concatenation, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to write arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: dfe8808b-6928-483c-9d74-e0359b2697c6
+   Path: tools/run_snyk_scans.py, line 148
+   Info: Unsanitized input from a command line argument flows into path concatenation, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to read arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: 4747b021-233b-4e3e-8de3-2e6800eaac95
+   Path: tools/run_snyk_scans.py, line 178
+   Info: Unsanitized input from a command line argument flows into path concatenation, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to read arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: 802ffe40-bded-45b6-a150-b620e24c5414
+   Path: tools/snyk_code_analyzer.py, line 164
+   Info: Unsanitized input from a command line argument flows into open, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to read arbitrary files.
+
+ âœ— [MEDIUM] Regular Expression Denial of Service (ReDoS)
+   Finding ID: 3bebe3e0-1733-4953-9178-8db40b066e72
+   Path: tools/code_implementation_server.py, line 1244
+   Info: Unsanitized user input from an MCP Server flows into re.search, where it is used to build a regular expression. This may result in a Regular expression Denial of Service attack (reDOS).
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: 9ed145e0-1351-462f-8008-1372fd75d71c
+   Path: tools/code_implementation_server.py, line 101
+   Info: Unsanitized input from an MCP Server flows into path concatenation, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to write arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: 2ccf95c6-451a-460b-8fcd-f4b40ef51ea7
+   Path: tools/code_implementation_server.py, line 278
+   Info: Unsanitized input from an MCP Server flows into path concatenation, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to write arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: d87ccbe3-7c31-4055-ba5a-3c00c24d703f
+   Path: tools/code_implementation_server.py, line 573
+   Info: Unsanitized input from an MCP Server flows into path concatenation, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to write arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: 9d54e8fa-1081-4bcb-81bd-0b6c3cd6bdb0
+   Path: tools/code_implementation_server.py, line 144
+   Info: Unsanitized input from an MCP Server flows into open, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to read arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: b02f7c78-a24f-480f-b742-59e4a7c2ba06
+   Path: tools/code_implementation_server.py, line 297
+   Info: Unsanitized input from an MCP Server flows into open, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to read arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: 3d6b52ee-289c-4590-ba44-593e4bec8f20
+   Path: tools/code_implementation_server.py, line 923
+   Info: Unsanitized input from an MCP Server flows into open, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to read arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: 51c9e3d7-1e04-43d1-be7f-8b8cd71d9250
+   Path: tools/code_implementation_server.py, line 1232
+   Info: Unsanitized input from an MCP Server flows into open, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to read arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: 015b8fe4-460b-4a2c-9598-0db00e97c5a3
+   Path: tools/code_reference_indexer.py, line 77
+   Info: Unsanitized input from an MCP Server flows into open, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to read arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: d680806d-dff9-464d-9775-a296f748779e
+   Path: tools/document_segmentation_server.py, line 1484
+   Info: Unsanitized input from an MCP Server flows into open, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to read arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: 6ee4844f-c1db-4f88-ba34-66402dae5c71
+   Path: tools/document_segmentation_server.py, line 1535
+   Info: Unsanitized input from an MCP Server flows into open, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to read arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: b13eb319-fbd8-45f7-b374-26d1ea870658
+   Path: tools/document_segmentation_server.py, line 1633
+   Info: Unsanitized input from an MCP Server flows into open, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to read arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: 71e779cb-9736-4965-944c-977d2cd249b0
+   Path: tools/code_implementation_server.py, line 435
+   Info: Unsanitized input from an MCP Server flows into shutil.copy2, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to read arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: d4faf075-ac50-4f2b-b9c2-17367dbf9dbc
+   Path: tools/code_implementation_server.py, line 583
+   Info: Unsanitized input from an MCP Server flows into shutil.copy2, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to read arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: c3a152bb-3e9e-479b-ac25-e3c642e3342f
+   Path: tools/code_implementation_server.py, line 439
+   Info: Unsanitized input from an MCP Server flows into open, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to write arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: 93172d72-520f-4e56-bfda-286c818e67be
+   Path: tools/code_implementation_server.py, line 588
+   Info: Unsanitized input from an MCP Server flows into open, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to write arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: acbe45b8-3239-4d51-8847-f37c6170b03e
+   Path: tools/document_segmentation_server.py, line 1569
+   Info: Unsanitized input from an MCP Server flows into open, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to write arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: 68c4bfd0-aca3-451c-a2d0-fba43446f681
+   Path: tools/code_implementation_server.py, line 907
+   Info: Unsanitized input from an MCP Server flows into path concatenation, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to read arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: 63a2ae01-9392-4ec8-83f5-dd0adf6bab93
+   Path: tools/code_implementation_server.py, line 1443
+   Info: Unsanitized input from an MCP Server flows into pathlib.Path, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to write arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: 439ea6c1-9177-4dad-b441-bdb4c1dc8b2a
+   Path: tools/document_segmentation_server.py, line 1530
+   Info: Unsanitized input from an MCP Server flows into os.remove, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to remove arbitrary files.
+
+ âœ— [MEDIUM] Path Traversal
+   Finding ID: d5995de0-6c2c-44f1-8d34-594659a55de9
+   Path: tools/document_segmentation_server.py, line 1562
+   Info: Unsanitized input from an MCP Server flows into json.dump, where it is used as a path. This may result in a Path Traversal vulnerability and allow an attacker to write arbitrary files.
+
+
+
+â•­â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â•®
+â”‚ Test Summary                                         â”‚
+â”‚                                                      â”‚
+â”‚   Organization:                                      â”‚
+â”‚   Test type:         Static code analysis            â”‚
+â”‚   Project path:      C:\DynoAI\DeepCode              â”‚
+â”‚                                                      â”‚
+â”‚   Total issues:   35                                 â”‚
+â”‚   Ignored issues: 0 [ 0 HIGH  0 MEDIUM  0 LOW ]      â”‚
+â”‚   Open issues:    35 [ 0 HIGH  35 MEDIUM  0 LOW ]    â”‚
+â•°â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â•¯
+    
+ðŸ’¡ Tip
+
+   To view ignored issues, use the --include-ignores option.
+                                                            
+
