@@ -11,8 +11,11 @@ __pycache__/
 .venv/
 env/
 venv/
-*.env*
-.env_example
+*.env
+.env.*
+
+# Allow .env.example to be tracked
+!.env.example
 
 
 # Build / Distribution
@@ -26,6 +29,7 @@ site/
 *.logfire
 *.coverage/
 log/
+logs/
 
 # Caches
 .cache/
@@ -59,7 +63,9 @@ ignore_this.txt
 *.ignore.*
 
 # unit-test files
+# Note: Exclude test_setup.py as it's the official setup verification script
 test_*
+!test_setup.py
 run_indexer_with_filtering.py
 
 # Cline files
