@@ -19,7 +19,7 @@ import sys
 import time
 import yaml
 from pathlib import Path
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, Callable
 
 # MCP Agent imports
 from mcp_agent.agents.agent import Agent
@@ -99,6 +99,7 @@ class CodeImplementationWorkflow:
         target_directory: Optional[str] = None,
         pure_code_mode: bool = False,
         enable_read_tools: bool = True,
+        progress_callback: Optional[Callable] = None,
     ):
         """Run complete workflow - Main public interface"""
         # Set the read tools configuration
@@ -132,6 +133,9 @@ class CodeImplementationWorkflow:
                 results["file_tree"] = "Already exists, skipped creation"
             else:
                 self.logger.info("Creating file tree...")
+                if progress_callback:
+                    progress_callback(85, "📁 Creating project file structure...")
+                
                 results["file_tree"] = await self.create_file_structure(
                     plan_content, target_directory
                 )
@@ -139,8 +143,11 @@ class CodeImplementationWorkflow:
             # Code implementation
             if pure_code_mode:
                 self.logger.info("Starting pure code implementation...")
+                if progress_callback:
+                    progress_callback(85, "🔬 Synthesizing code implementation (this may take a while)...")
+                
                 results["code_implementation"] = await self.implement_code_pure(
-                    plan_content, target_directory, code_directory
+                    plan_content, target_directory, code_directory, progress_callback
                 )
             else:
                 pass
@@ -204,7 +211,11 @@ Requirements:
             return result
 
     async def implement_code_pure(
-        self, plan_content: str, target_directory: str, code_directory: str = None
+        self,
+        plan_content: str,
+        target_directory: str,
+        code_directory: str = None,
+        progress_callback: Optional[Callable] = None,
     ) -> str:
         """Pure code implementation - focus on code writing without testing"""
         self.logger.info("Starting pure code implementation (no testing)...")
@@ -228,28 +239,6 @@ Requirements:
             system_message = GENERAL_CODE_IMPLEMENTATION_SYSTEM_PROMPT
             messages = []
 
-            #             implementation_message = f"""**TASK: Implement Research Paper Reproduction Code**
-
-            # You are implementing a complete, working codebase that reproduces the core algorithms, experiments, and methods described in a research paper. Your goal is to create functional code that can replicate the paper's key results and contributions.
-
-            # **What you need to do:**
-            # - Analyze the paper content and reproduction plan to understand requirements
-            # - Implement all core algorithms mentioned in the main body of the paper
-            # - Create the necessary components following the planned architecture
-            # - Test each component to ensure functionality
-            # - Integrate components into a cohesive, executable system
-            # - Focus on reproducing main contributions rather than appendix-only experiments
-
-            # **RESOURCES:**
-            # - **Paper & Reproduction Plan**: `{target_directory}/` (contains .md paper files and initial_plan.txt with detailed implementation guidance)
-            # - **Reference Code Indexes**: `{target_directory}/indexes/` (JSON files with implementation patterns from related codebases)
-            # - **Implementation Directory**: `{code_directory}/` (your working directory for all code files)
-
-            # **CURRENT OBJECTIVE:**
-            # Start by reading the reproduction plan (`{target_directory}/initial_plan.txt`) to understand the implementation strategy, then examine the paper content to identify the first priority component to implement. Use the search_code tool to find relevant reference implementations from the indexes directory (`{target_directory}/indexes/*.json`) before coding.
-
-            # ---
-            # **START:** Review the plan above and begin implementation."""
             implementation_message = f"""**Task: Implement code based on the following reproduction plan**
 
 **Code Reproduction Plan:**
@@ -269,6 +258,7 @@ Requirements:
                 tools,
                 plan_content,
                 target_directory,
+                progress_callback,
             )
 
             return result
@@ -287,6 +277,7 @@ Requirements:
         tools,
         plan_content,
         target_directory,
+        progress_callback: Optional[Callable] = None,
     ):
         """Pure code implementation loop with memory optimization and phase consistency"""
         max_iterations = 800
@@ -326,6 +317,8 @@ Requirements:
             if elapsed_time > max_time:
                 self.logger.warning(f"Time limit reached: {elapsed_time:.2f}s")
                 break
+                
+            # (Progress update moved inside loop logic for better granularity)
 
             # # Test simplified memory approach if we have files implemented
             # if iteration == 5 and code_agent.get_files_implemented_count() > 0:
@@ -341,6 +334,9 @@ Requirements:
             # Round logging removed
 
             # Call LLM
+            if progress_callback:
+                progress_callback(85, f"🔬 Iteration {iteration}: Thinking... | Files: {code_agent.get_files_implemented_count()}")
+
             response = await self._call_llm_with_tools(
                 client, client_type, current_system_message, messages, tools
             )
@@ -353,6 +349,22 @@ Requirements:
 
             # Handle tool calls
             if response.get("tool_calls"):
+                # Update progress with tool activity
+                if progress_callback:
+                    tool_names = [t["name"] for t in response["tool_calls"]]
+                    activity = f"Executing {len(tool_names)} tools..."
+                    
+                    # Prioritize specific activities
+                    for t in response["tool_calls"]:
+                        if t["name"] == "write_file":
+                            fname = os.path.basename(t["input"].get("file_path", "file"))
+                            activity = f"Writing {fname}..."
+                            break
+                        elif t["name"] == "read_file":
+                            activity = "Reading files..."
+                    
+                    progress_callback(85, f"🔬 Iteration {iteration}: {activity} | Files: {code_agent.get_files_implemented_count()}")
+
                 tool_results = await code_agent.execute_tool_calls(
                     response["tool_calls"]
                 )

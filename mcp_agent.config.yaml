@@ -3,7 +3,7 @@ anthropic: null
 default_search_server: brave
 document_segmentation:
   enabled: true
-  size_threshold_chars: 3000
+  size_threshold_chars: 50000
 execution_engine: asyncio
 logger:
   level: info
@@ -30,7 +30,7 @@ mcp:
       - '@modelcontextprotocol/server-brave-search'
       command: npx
       env:
-        BRAVE_API_KEY: ''
+        BRAVE_API_KEY: BSAfmNEGImO5uLbbY5BIEoBC-bsbc4R
     code-implementation:
       args:
       - tools/code_implementation_server.py
@@ -85,7 +85,7 @@ mcp:
         PYTHONPATH: .
 openai:
   base_max_tokens: 20000
-  default_model: google/gemini-2.5-pro
+  default_model: gpt-4o
   max_tokens_policy: adaptive
   retry_max_tokens: 32768
 planning_mode: traditional

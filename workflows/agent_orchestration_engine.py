@@ -199,7 +199,9 @@ def get_default_search_server(config_path: str = "mcp_agent.config.yaml"):
             with open(config_path, "r", encoding="utf-8") as f:
                 config = yaml.safe_load(f)
 
-            default_server = config.get("default_search_server", "brave")
+            default_server = config.get("default_search_server")
+            if not default_server:
+                default_server = "brave"
             print(f"🔍 Using search server: {default_server}")
             return default_server
         else:
@@ -1210,6 +1212,7 @@ async def synthesize_code_implementation_agent(
                 plan_file_path=dir_info["initial_plan_path"],
                 target_directory=dir_info["paper_dir"],
                 pure_code_mode=True,  # Focus on code implementation, skip testing
+                progress_callback=progress_callback,
             )
 
             # Log implementation results

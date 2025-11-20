@@ -70,3 +70,6 @@ run_indexer_with_filtering.py
 
 # Cline files
 memory-bank/
+
+# Snyk Security Extension - AI Rules (auto-generated)
+.cursor\rules\snyk_rules.mdc

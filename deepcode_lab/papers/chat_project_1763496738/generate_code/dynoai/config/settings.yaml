@@ -1,0 +1,218 @@
+# DynoAI Configuration Settings
+# Main application configuration file
+
+# AI Engine Configuration
+ai_engine:
+  # Default AI provider (openai, anthropic)
+  default_provider: "openai"
+  
+  # Model configurations
+  models:
+    openai:
+      default_model: "gpt-3.5-turbo"
+      available_models:
+        - "gpt-3.5-turbo"
+        - "gpt-4"
+        - "gpt-4-turbo-preview"
+      max_tokens: 2000
+      temperature: 0.7
+      top_p: 1.0
+    
+    anthropic:
+      default_model: "claude-3-sonnet-20240229"
+      available_models:
+        - "claude-3-haiku-20240307"
+        - "claude-3-sonnet-20240229"
+        - "claude-3-opus-20240229"
+      max_tokens: 2000
+      temperature: 0.7
+
+# Memory Management Settings
+memory:
+  # Maximum number of conversation turns to keep in active memory
+  max_conversation_history: 50
+  
+  # Context window size for AI processing
+  context_window_size: 4000
+  
+  # Memory persistence settings
+  persistence:
+    auto_save: true
+    save_interval_minutes: 5
+    backup_conversations: true
+    max_backup_files: 10
+
+# Learning Module Configuration
+learning:
+  # Enable/disable dynamic learning
+  enabled: true
+  
+  # Learning parameters
+  adaptation_rate: 0.1
+  feedback_weight: 0.8
+  
+  # Knowledge base settings
+  knowledge_base:
+    max_entries: 1000
+    auto_cleanup: true
+    cleanup_threshold_days: 30
+
+# Response Generation Settings
+response:
+  # Response style options
+  default_style: "conversational"
+  available_styles:
+    - "conversational"
+    - "professional"
+    - "casual"
+    - "technical"
+    - "creative"
+  
+  # Response formatting
+  formatting:
+    use_markdown: true
+    max_response_length: 2000
+    include_sources: true
+    show_confidence: false
+
+# Plugin System Configuration
+plugins:
+  # Enable/disable plugin system
+  enabled: true
+  
+  # Default enabled plugins
+  default_plugins:
+    - "calculator"
+    - "web_search"
+    - "file_operations"
+    - "weather"
+  
+  # Plugin-specific settings
+  web_search:
+    max_results: 5
+    timeout_seconds: 10
+    safe_search: true
+  
+  calculator:
+    precision: 10
+    scientific_notation: true
+  
+  weather:
+    default_units: "metric"
+    cache_duration_minutes: 30
+  
+  file_operations:
+    allowed_extensions: [".txt", ".md", ".json", ".yaml", ".py"]
+    max_file_size_mb: 10
+    safe_mode: true
+
+# User Interface Settings
+interface:
+  # CLI settings
+  cli:
+    prompt_style: "rich"
+    show_typing_indicator: true
+    auto_complete: true
+    history_size: 100
+  
+  # GUI settings (if enabled)
+  gui:
+    theme: "light"
+    window_size: [800, 600]
+    font_family: "Arial"
+    font_size: 12
+    auto_scroll: true
+
+# Data Storage Configuration
+storage:
+  # Data directory paths
+  data_dir: "data"
+  conversations_file: "conversations.json"
+  preferences_file: "user_preferences.json"
+  knowledge_base_file: "knowledge_base.json"
+  
+  # Storage options
+  compression: false
+  encryption: false
+  backup_enabled: true
+  
+  # File rotation settings
+  max_file_size_mb: 50
+  rotate_files: true
+  max_rotated_files: 5
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file_logging: true
+  log_file: "logs/dynoai.log"
+  max_log_size_mb: 10
+  backup_count: 3
+
+# Security Settings
+security:
+  # API key validation
+  validate_api_keys: true
+  
+  # Rate limiting
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 60
+    burst_limit: 10
+  
+  # Content filtering
+  content_filter:
+    enabled: true
+    block_harmful_content: true
+    profanity_filter: false
+
+# Performance Settings
+performance:
+  # Caching
+  cache:
+    enabled: true
+    max_cache_size_mb: 100
+    cache_ttl_minutes: 60
+  
+  # Concurrent processing
+  max_concurrent_requests: 3
+  request_timeout_seconds: 30
+  
+  # Resource limits
+  max_memory_usage_mb: 500
+  cpu_usage_limit_percent: 80
+
+# Development Settings
+development:
+  debug_mode: false
+  verbose_logging: false
+  mock_api_responses: false
+  test_mode: false
+  
+  # Development tools
+  auto_reload: false
+  profiling_enabled: false
+  metrics_collection: false
+
+# Feature Flags
+features:
+  experimental_learning: false
+  advanced_plugins: true
+  gui_interface: true
+  voice_interaction: false
+  multi_language_support: false
+  cloud_sync: false
+
+# Application Metadata
+app:
+  name: "DynoAI"
+  version: "1.0.0"
+  description: "Dynamic AI Assistant Software"
+  author: "DynoAI Development Team"
+  license: "MIT"
+  
+  # Update settings
+  check_for_updates: true
+  auto_update: false
+  update_channel: "stable"

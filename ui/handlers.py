@@ -326,11 +326,11 @@ def run_async_task_simple(coro):
                     max_workers=1, thread_name_prefix="deepcode_async"
                 )
                 future = executor.submit(run_in_thread)
-                result = future.result(timeout=300)  # 5 minute timeout
+                result = future.result(timeout=3600)  # 60 minute timeout
                 return result
             except concurrent.futures.TimeoutError:
                 st.error(
-                    "Processing timeout after 5 minutes. Please try again with a smaller file."
+                    "Processing timeout after 60 minutes. Please try again with a smaller file."
                 )
                 raise TimeoutError("Processing timeout")
             except Exception as e:

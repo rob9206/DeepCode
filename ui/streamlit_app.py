@@ -7,6 +7,45 @@ Streamlit Web Interface Main Application File
 import os
 import sys
 
+# Fix UTF-8 encoding for Windows console at the very start
+if sys.platform == 'win32':
+    # Attempt to set UTF-8 encoding
+    try:
+        if hasattr(sys.stdout, 'reconfigure'):
+            sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+        if hasattr(sys.stderr, 'reconfigure'):
+            sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+
+    # Always wrap print on Windows to catch any remaining UnicodeEncodeError
+    _original_print = print
+    def print(*args, **kwargs):
+        try:
+            _original_print(*args, **kwargs)
+        except UnicodeEncodeError:
+            # Fallback: encode with errors='replace'
+            safe_args = []
+            for arg in args:
+                if isinstance(arg, str):
+                    # Replace unencodable characters
+                    encoding = sys.stdout.encoding or 'ascii'
+                    safe_args.append(arg.encode(encoding, errors='replace').decode(encoding))
+                else:
+                    safe_args.append(arg)
+            try:
+                _original_print(*safe_args, **kwargs)
+            except Exception:
+                # If it still fails, purely ascii fallback
+                ascii_args = [
+                    str(a).encode('ascii', errors='replace').decode('ascii') 
+                    for a in args
+                ]
+                _original_print(*ascii_args, **kwargs)
+
+    import builtins
+    builtins.print = print
+
 # Disable .pyc file generation
 os.environ["PYTHONDONTWRITEBYTECODE"] = "1"
 

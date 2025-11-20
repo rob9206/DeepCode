@@ -1,0 +1,7 @@
+Flask==2.1.0
+PyJWT==2.6.0
+Flask-SQLAlchemy==2.5.1
+Werkzeug==2.1.0
+# Optional dependencies
+# Flask-Cors
+# Flask-Migrate
