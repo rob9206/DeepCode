@@ -27,16 +27,22 @@ def calculate_bb_squeeze_score(prices: pd.Series, window: int = 20) -> float:
     Higher score = tighter squeeze = more compression.
     Measures bandwidth as percentage of price.
     """
+    if len(prices) == 0:
+        return 50.0  # Empty data
+
     upper, sma, lower = calculate_bollinger_bands(prices, window)
 
     # Calculate bandwidth as percentage of middle band
     bandwidth = ((upper - lower) / sma) * 100
 
     # Get current bandwidth
+    historical_bw = bandwidth.dropna()
+    if len(historical_bw) == 0:
+        return 50.0  # No valid data
+
     current_bw = bandwidth.iloc[-1]
 
     # Compare to historical bandwidth (lower percentile = higher compression)
-    historical_bw = bandwidth.dropna()
     if len(historical_bw) < window:
         return 50.0  # Not enough data
 
@@ -68,11 +74,17 @@ def calculate_atr_compression_score(high: pd.Series, low: pd.Series, close: pd.S
 
     Higher score = lower ATR = more compression.
     """
+    if len(close) == 0:
+        return 50.0  # Empty data
+
     atr = calculate_atr(high, low, close, window)
     atr_pct = (atr / close) * 100  # ATR as percentage of price
 
-    current_atr = atr_pct.iloc[-1]
     historical_atr = atr_pct.dropna()
+    if len(historical_atr) == 0:
+        return 50.0  # No valid data
+
+    current_atr = atr_pct.iloc[-1]
 
     if len(historical_atr) < window:
         return 50.0
