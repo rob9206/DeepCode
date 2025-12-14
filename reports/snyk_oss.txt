@@ -1,0 +1,52 @@
+
+Testing C:\DynoAI\DeepCode...
+
+Tested 159 dependencies for known issues, found 11 issues, 41 vulnerable paths.
+
+
+Issues with no direct upgrade or patch:
+  âœ— Denial of Service (DoS) [Medium Severity][https://security.snyk.io/vuln/SNYK-PYTHON-PYPDF2-5741898] in pypdf2@3.0.1
+    introduced by pypdf2@3.0.1
+  No upgrade or patch available
+  âœ— Improper Resource Shutdown or Release [Medium Severity][https://security.snyk.io/vuln/SNYK-PYTHON-TORCH-10332643] in torch@2.9.0
+    introduced by docling@2.60.0 > accelerate@1.11.0 > torch@2.9.0 and 3 other path(s)
+  No upgrade or patch available
+  âœ— Buffer Overflow [High Severity][https://security.snyk.io/vuln/SNYK-PYTHON-TORCH-10332644] in torch@2.9.0
+    introduced by docling@2.60.0 > accelerate@1.11.0 > torch@2.9.0 and 3 other path(s)
+  No upgrade or patch available
+  âœ— Buffer Overflow [Medium Severity][https://security.snyk.io/vuln/SNYK-PYTHON-TORCH-10332645] in torch@2.9.0
+    introduced by docling@2.60.0 > accelerate@1.11.0 > torch@2.9.0 and 3 other path(s)
+  No upgrade or patch available
+  âœ— Mismatched Memory Management Routines [Medium Severity][https://security.snyk.io/vuln/SNYK-PYTHON-TORCH-10337825] in torch@2.9.0
+    introduced by docling@2.60.0 > accelerate@1.11.0 > torch@2.9.0 and 3 other path(s)
+  No upgrade or patch available
+  âœ— Out-of-bounds Write [Medium Severity][https://security.snyk.io/vuln/SNYK-PYTHON-TORCH-10337826] in torch@2.9.0
+    introduced by docling@2.60.0 > accelerate@1.11.0 > torch@2.9.0 and 3 other path(s)
+  No upgrade or patch available
+  âœ— Out-of-bounds Write [Medium Severity][https://security.snyk.io/vuln/SNYK-PYTHON-TORCH-10337828] in torch@2.9.0
+    introduced by docling@2.60.0 > accelerate@1.11.0 > torch@2.9.0 and 3 other path(s)
+  No upgrade or patch available
+  âœ— Out-of-bounds Write [Medium Severity][https://security.snyk.io/vuln/SNYK-PYTHON-TORCH-10337834] in torch@2.9.0
+    introduced by docling@2.60.0 > accelerate@1.11.0 > torch@2.9.0 and 3 other path(s)
+  No upgrade or patch available
+  âœ— Reachable Assertion [Low Severity][https://security.snyk.io/vuln/SNYK-PYTHON-TORCH-13052805] in torch@2.9.0
+    introduced by docling@2.60.0 > accelerate@1.11.0 > torch@2.9.0 and 3 other path(s)
+  No upgrade or patch available
+  âœ— Integer Overflow or Wraparound [Medium Severity][https://security.snyk.io/vuln/SNYK-PYTHON-TORCH-13052969] in torch@2.9.0
+    introduced by docling@2.60.0 > accelerate@1.11.0 > torch@2.9.0 and 3 other path(s)
+  No upgrade or patch available
+  âœ— Always-Incorrect Control Flow Implementation [Low Severity][https://security.snyk.io/vuln/SNYK-PYTHON-TORCH-13052971] in torch@2.9.0
+    introduced by docling@2.60.0 > accelerate@1.11.0 > torch@2.9.0 and 3 other path(s)
+  No upgrade or patch available
+
+
+
+Organization:      rob9206
+Package manager:   pip
+Target file:       C:\DynoAI\DeepCode\requirements.txt
+Project name:      DeepCode
+Open source:       no
+Project path:      C:\DynoAI\DeepCode
+Licenses:          enabled
+
+

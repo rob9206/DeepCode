@@ -49,6 +49,10 @@ if sys.platform == 'win32':
 # Disable .pyc file generation
 os.environ["PYTHONDONTWRITEBYTECODE"] = "1"
 
+# Apply nest_asyncio early to support nested event loops
+import nest_asyncio
+nest_asyncio.apply()
+
 # Add parent directory to path for module imports
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)

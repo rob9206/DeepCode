@@ -253,15 +253,17 @@ async def main():
         # 创建CLI应用
         app = CLIApp()
 
-        # 设置配置
+        # 设置配置 - 默认禁用索引功能以加快处理速度
         if args.optimized:
             app.cli.enable_indexing = False
             print(
                 f"\n{Colors.YELLOW}⚡ Optimized mode enabled - indexing disabled{Colors.ENDC}"
             )
         else:
+            # 默认也禁用索引功能
+            app.cli.enable_indexing = False
             print(
-                f"\n{Colors.GREEN}🧠 Comprehensive mode enabled - full intelligence analysis{Colors.ENDC}"
+                f"\n{Colors.YELLOW}⚡ Fast mode enabled - indexing disabled by default{Colors.ENDC}"
             )
 
         # Configure document segmentation settings
@@ -287,7 +289,9 @@ async def main():
                 if not os.path.exists(args.file):
                     print(f"{Colors.FAIL}❌ File not found: {args.file}{Colors.ENDC}")
                     sys.exit(1)
-                success = await run_direct_processing(app, args.file, "file")
+                # 使用 file:// 前缀保持与交互模式一致，确保文件被复制而非移动
+                file_url = f"file://{os.path.abspath(args.file)}"
+                success = await run_direct_processing(app, file_url, "file")
             elif args.url:
                 success = await run_direct_processing(app, args.url, "url")
             elif args.chat:

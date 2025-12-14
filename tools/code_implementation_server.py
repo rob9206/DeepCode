@@ -90,14 +90,20 @@ def ensure_workspace_exists():
 
 
 def validate_path(path: str) -> Path:
-    """Validate if path is within workspace"""
+    """Validate that a relative path stays within the WORKSPACE_DIR.
+
+    Uses Path.relative_to instead of string prefix checks to avoid bypasses.
+    """
     if WORKSPACE_DIR is None:
         initialize_workspace()
 
-    full_path = (WORKSPACE_DIR / path).resolve()
-    if not str(full_path).startswith(str(WORKSPACE_DIR)):
+    # Normalize and resolve against the workspace
+    target = (WORKSPACE_DIR / path).resolve(strict=False)
+    try:
+        _ = target.relative_to(WORKSPACE_DIR)
+    except ValueError:
         raise ValueError(f"Path {path} is outside workspace scope")
-    return full_path
+    return target
 
 
 def log_operation(action: str, details: Dict[str, Any]):
@@ -792,16 +798,35 @@ async def execute_bash(command: str, timeout: int = 30) -> str:
         # Ensure workspace directory exists
         ensure_workspace_exists()
 
-        # Execute command
-        result = subprocess.run(
-            command,
-            shell=True,
-            cwd=WORKSPACE_DIR,
-            capture_output=True,
-            text=True,
-            timeout=timeout,
-            encoding="utf-8",
-        )
+        # Execute command using shell=False to reduce injection risk
+        import shlex, os as _os
+        try:
+            # Windows parsing is slightly different; shlex with posix=(not nt)
+            args_list = shlex.split(command, posix=(_os.name != "nt"))
+        except ValueError:
+            # Fallback: run via shell but only if it passes the dangerous command filter
+            args_list = None
+
+        if args_list:
+            result = subprocess.run(
+                args_list,
+                shell=False,
+                cwd=WORKSPACE_DIR,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+                encoding="utf-8",
+            )
+        else:
+            result = subprocess.run(
+                command,
+                shell=True,
+                cwd=WORKSPACE_DIR,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+                encoding="utf-8",
+            )
 
         execution_result = {
             "status": "success" if result.returncode == 0 else "error",
@@ -1212,15 +1237,22 @@ async def search_code(
 
                 for line_num, line in enumerate(lines, 1):
                     if use_regex:
-                        if re.search(pattern, line):
-                            matches.append(
-                                {
-                                    "file": relative_path,
-                                    "line_number": line_num,
-                                    "line_content": line.strip(),
-                                    "match_type": "regex",
-                                }
-                            )
+                        # Guard against catastrophic regex by limiting length and catching errors
+                        if len(pattern) > 2000:
+                            continue
+                        try:
+                            if re.search(pattern, line):
+                                matches.append(
+                                    {
+                                        "file": relative_path,
+                                        "line_number": line_num,
+                                        "line_content": line.strip(),
+                                        "match_type": "regex",
+                                    }
+                                )
+                        except re.error:
+                            # Skip invalid regex patterns
+                            continue
                     else:
                         if pattern.lower() in line.lower():
                             matches.append(

@@ -551,7 +551,8 @@ class CodeIndexer:
             from datetime import datetime
 
             # Create a hash of the prompt for filename
-            prompt_hash = hashlib.md5(prompt.encode()).hexdigest()[:8]
+            # Use SHA-256 instead of MD5 for creating a stable filename hash
+            prompt_hash = hashlib.sha256(prompt.encode()).hexdigest()[:8]
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"{provider}_{timestamp}_{prompt_hash}.json"
 
