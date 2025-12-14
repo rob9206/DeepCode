@@ -22,6 +22,7 @@ venv/
 dist/
 build/
 site/
+*.zip
 
 # Logs / Reports
 *.log
