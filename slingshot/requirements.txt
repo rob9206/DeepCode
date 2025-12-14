@@ -3,5 +3,8 @@ yfinance>=0.2.32
 pandas>=2.0.0
 numpy>=1.24.0
 
+# Web UI (optional - only needed for webapp.py)
+flask>=3.0.0
+
 # Testing
 pytest>=7.4.0

@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}{{ data.ticker }} - Slingshot Scanner{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">🔍 Deep Dive: {{ data.ticker }}</h2>
+
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h4>{{ data.info.name }}</h4>
+        <p class="text-muted mb-0">
+            <strong>Sector:</strong> {{ data.info.sector }} |
+            <strong>Industry:</strong> {{ data.info.industry }}
+        </p>
+    </div>
+    <div class="col-md-4 text-end">
+        {% set total = data.score.total_score %}
+        <h5 class="text-muted">Total Score</h5>
+        {% if total >= 70 %}
+            <h1 class="score-badge score-high">{{ "%.1f"|format(total) }}</h1>
+        {% elif total >= 50 %}
+            <h1 class="score-badge score-medium">{{ "%.1f"|format(total) }}</h1>
+        {% else %}
+            <h1 class="score-badge score-low">{{ "%.1f"|format(total) }}</h1>
+        {% endif %}
+        {% if data.score.is_slingshot_candidate %}
+            <div class="mt-2">
+                <span class="slingshot-badge">🎯 SLINGSHOT CANDIDATE</span>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if data.score.themes %}
+<div class="mb-4">
+    <strong>Themes:</strong>
+    {% for theme in data.score.themes %}
+        <span class="badge bg-secondary">{{ theme }}</span>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="stat-box">
+            <h5>🔧 Compression</h5>
+            <h2 class="mb-3">{{ "%.1f"|format(data.breakdown.compression.overall) }}/100</h2>
+            <table class="table table-sm mb-0">
+                <tr>
+                    <td>BB Squeeze</td>
+                    <td class="text-end"><strong>{{ "%.1f"|format(data.breakdown.compression.bb_squeeze) }}</strong></td>
+                </tr>
+                <tr>
+                    <td>ATR Compression</td>
+                    <td class="text-end"><strong>{{ "%.1f"|format(data.breakdown.compression.atr_compression) }}</strong></td>
+                </tr>
+                <tr>
+                    <td>Volume Dry-up</td>
+                    <td class="text-end"><strong>{{ "%.1f"|format(data.breakdown.compression.volume_dryup) }}</strong></td>
+                </tr>
+                <tr>
+                    <td>Price Range</td>
+                    <td class="text-end"><strong>{{ "%.1f"|format(data.breakdown.compression.price_range_compression) }}</strong></td>
+                </tr>
+            </table>
+            <div class="mt-2">
+                {% if data.breakdown.compression.is_compressed %}
+                    <span class="badge bg-success">✅ COMPRESSED</span>
+                {% else %}
+                    <span class="badge bg-secondary">Not Compressed</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="stat-box">
+            <h5>💰 Smart Money</h5>
+            <h2 class="mb-3">{{ "%.1f"|format(data.breakdown.smart_money.overall) }}/100</h2>
+            <table class="table table-sm mb-0">
+                <tr>
+                    <td>Institutional</td>
+                    <td class="text-end"><strong>{{ "%.1f"|format(data.breakdown.smart_money.institutional_buying) }}</strong></td>
+                </tr>
+                <tr>
+                    <td>Insider</td>
+                    <td class="text-end"><strong>{{ "%.1f"|format(data.breakdown.smart_money.insider_buying) }}</strong></td>
+                </tr>
+                <tr>
+                    <td>Options Flow</td>
+                    <td class="text-end"><strong>{{ "%.1f"|format(data.breakdown.smart_money.options_flow) }}</strong></td>
+                </tr>
+            </table>
+            <div class="mt-3">
+                {% if data.breakdown.smart_money.is_accumulating %}
+                    <span class="badge bg-success">✅ ACCUMULATING</span>
+                {% else %}
+                    <span class="badge bg-secondary">Not Accumulating</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="stat-box">
+            <h5>📰 Theme/Narrative</h5>
+            <h2 class="mb-3">{{ "%.1f"|format(data.breakdown.theme.overall) }}/100</h2>
+            <table class="table table-sm mb-0">
+                <tr>
+                    <td>Narrative Score</td>
+                    <td class="text-end"><strong>{{ "%.1f"|format(data.breakdown.theme.narrative_score) }}</strong></td>
+                </tr>
+                <tr>
+                    <td>Theme Momentum</td>
+                    <td class="text-end"><strong>{{ "%.1f"|format(data.breakdown.theme.theme_momentum) }}</strong></td>
+                </tr>
+            </table>
+            <div class="mt-3">
+                {% if data.breakdown.theme.is_trending %}
+                    <span class="badge bg-success">✅ TRENDING</span>
+                {% else %}
+                    <span class="badge bg-secondary">Not Trending</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if data.context.recent_news %}
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">📰 Recent News</h5>
+    </div>
+    <div class="card-body">
+        {% for news in data.context.recent_news[:10] %}
+        <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    {% set sentiment = news.sentiment %}
+                    {% if sentiment > 0.2 %}
+                        <span class="me-2">🟢</span>
+                    {% elif sentiment < -0.2 %}
+                        <span class="me-2">🔴</span>
+                    {% else %}
+                        <span class="me-2">⚪</span>
+                    {% endif %}
+                    <strong>{{ news.headline }}</strong>
+                </div>
+                <small class="text-muted">{{ news.source }}</small>
+            </div>
+            <small class="text-muted">{{ news.published }}</small>
+        </div>
+        {% if not loop.last %}<hr>{% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<div class="alert alert-light">
+    <h5>💡 Interpretation</h5>
+    {% if data.score.is_slingshot_candidate %}
+    <p class="mb-2">This is a <strong>STRONG slingshot setup</strong>:</p>
+    <ul class="mb-0">
+        <li>Price is coiling (compression = {{ "%.1f"|format(data.breakdown.compression.overall) }}/100)</li>
+        <li>Smart money is accumulating ({{ "%.1f"|format(data.breakdown.smart_money.overall) }}/100)</li>
+        <li>Strong narrative with positive momentum ({{ "%.1f"|format(data.breakdown.theme.overall) }}/100)</li>
+        <li>All three factors aligned = High probability setup</li>
+    </ul>
+    <p class="mt-2 mb-0"><strong>Watch for:</strong> Catalyst/news that triggers breakout from compression</p>
+    {% else %}
+    <p class="mb-0">This stock does not currently meet slingshot criteria. Monitor for changes in compression, smart money activity, or theme strength.</p>
+    {% endif %}
+</div>
+
+<div class="mt-4">
+    <a href="/scan" class="btn btn-secondary">← Back to Scan</a>
+</div>
+{% endblock %}

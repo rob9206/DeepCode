@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="text-center mb-5">
+    <h1 class="display-4 mb-3">🎯 Slingshot Stock Scanner</h1>
+    <p class="lead text-muted">
+        Identify high-probability "slingshot" setups by combining technical compression,
+        smart money activity, and strong narratives.
+    </p>
+</div>
+
+<div class="row mb-5">
+    <div class="col-md-4">
+        <div class="stat-box text-center">
+            <h3>🔧</h3>
+            <h5>Compression</h5>
+            <p class="text-muted mb-0">BB Squeeze, ATR, Volume Dry-up</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-box text-center">
+            <h3>💰</h3>
+            <h5>Smart Money</h5>
+            <p class="text-muted mb-0">Institutional, Insider, Options Flow</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-box text-center">
+            <h3>📰</h3>
+            <h5>Theme/Narrative</h5>
+            <p class="text-muted mb-0">Sector Themes & News Momentum</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">🔍 Scan Stocks</h5>
+                <p class="card-text">
+                    Scan popular stocks, specific tickers, or entire themes to find
+                    compressed setups ready to launch.
+                </p>
+                <a href="/scan" class="btn btn-primary">Start Scanning</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">📁 Browse Themes</h5>
+                <p class="card-text">
+                    Explore 10 pre-built theme baskets including AI, Semiconductors,
+                    Cloud, Cybersecurity, and more.
+                </p>
+                <a href="/themes" class="btn btn-primary">View Themes</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="alert alert-info mt-4">
+    <h5>💡 What is a Slingshot Setup?</h5>
+    <p class="mb-2">A slingshot setup occurs when three factors align:</p>
+    <ul class="mb-0">
+        <li><strong>Compression:</strong> Price coiling like a spring (low volatility)</li>
+        <li><strong>Smart Money:</strong> Institutions/insiders accumulating quietly</li>
+        <li><strong>Narrative:</strong> Strong sector theme with positive momentum</li>
+    </ul>
+    <p class="mt-2 mb-0">
+        When all three align, the stock is "loaded" and ready to launch on its next catalyst! 🚀
+    </p>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}{{ theme.name }} - Slingshot Scanner{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">📁 Theme: {{ theme.name }}</h2>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">{{ theme.ticker_count }} Tickers</h5>
+        <div class="d-flex flex-wrap gap-2 mt-3">
+            {% for ticker in theme.tickers %}
+            <a href="/ticker/{{ ticker }}" class="btn btn-outline-primary btn-sm">{{ ticker }}</a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="mb-4">
+    <a href="/scan" class="btn btn-primary">🎯 Scan This Theme</a>
+    <a href="/themes" class="btn btn-secondary">← Back to Themes</a>
+</div>
+
+<div class="alert alert-info">
+    <strong>💡 Tip:</strong> Click "Scan This Theme" to analyze all {{ theme.ticker_count }} tickers for slingshot setups, or click individual tickers for deep-dive analysis.
+</div>
+{% endblock %}

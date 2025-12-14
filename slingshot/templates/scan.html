@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Scan Stocks - Slingshot Scanner{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">🔍 Scan for Slingshot Setups</h2>
+
+<form method="POST" action="/scan">
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title mb-3">Choose Scan Type</h5>
+
+            <div class="mb-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="scan_type" id="scan_top" value="top" checked>
+                    <label class="form-check-label" for="scan_top">
+                        <strong>Top Popular Stocks</strong> - Scan the most liquid and actively traded stocks
+                    </label>
+                </div>
+            </div>
+
+            <div class="mb-3 ms-4" id="top_options">
+                <label for="top_limit" class="form-label">Number of stocks to scan:</label>
+                <select class="form-select" id="top_limit" name="limit" style="max-width: 200px;">
+                    <option value="5">Top 5</option>
+                    <option value="10" selected>Top 10</option>
+                    <option value="20">Top 20</option>
+                    <option value="50">Top 50</option>
+                </select>
+            </div>
+
+            <hr>
+
+            <div class="mb-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="scan_type" id="scan_theme" value="theme">
+                    <label class="form-check-label" for="scan_theme">
+                        <strong>Scan by Theme</strong> - Scan all stocks in a specific sector/theme
+                    </label>
+                </div>
+            </div>
+
+            <div class="mb-3 ms-4" id="theme_options" style="display: none;">
+                <label for="theme_select" class="form-label">Select theme:</label>
+                <select class="form-select" id="theme_select" name="theme" style="max-width: 300px;">
+                    <option value="AI">AI</option>
+                    <option value="Semiconductors">Semiconductors</option>
+                    <option value="Cloud">Cloud</option>
+                    <option value="Cybersecurity">Cybersecurity</option>
+                    <option value="Electric Vehicles">Electric Vehicles</option>
+                    <option value="Fintech">Fintech</option>
+                    <option value="Biotech">Biotech</option>
+                    <option value="Defense">Defense</option>
+                    <option value="Energy">Energy</option>
+                    <option value="Cannabis">Cannabis</option>
+                </select>
+            </div>
+
+            <hr>
+
+            <div class="mb-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="scan_type" id="scan_tickers" value="tickers">
+                    <label class="form-check-label" for="scan_tickers">
+                        <strong>Specific Tickers</strong> - Scan your own watchlist
+                    </label>
+                </div>
+            </div>
+
+            <div class="mb-3 ms-4" id="tickers_options" style="display: none;">
+                <label for="tickers_input" class="form-label">Enter tickers (comma-separated):</label>
+                <input type="text" class="form-control" id="tickers_input" name="tickers"
+                       placeholder="e.g., NVDA, AMD, TSLA, AAPL" style="max-width: 500px;">
+                <small class="text-muted">Separate tickers with commas</small>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-lg">
+        <span>🎯 Start Scan</span>
+    </button>
+</form>
+
+<div class="alert alert-info mt-4">
+    <strong>⏱️ Note:</strong> Scanning may take a few seconds depending on the number of stocks and your internet connection.
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Show/hide options based on selected scan type
+    document.querySelectorAll('input[name="scan_type"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            document.getElementById('top_options').style.display =
+                this.value === 'top' ? 'block' : 'none';
+            document.getElementById('theme_options').style.display =
+                this.value === 'theme' ? 'block' : 'none';
+            document.getElementById('tickers_options').style.display =
+                this.value === 'tickers' ? 'block' : 'none';
+        });
+    });
+</script>
+{% endblock %}
