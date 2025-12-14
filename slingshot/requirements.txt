@@ -3,6 +3,23 @@ yfinance>=0.2.32
 pandas>=2.0.0
 numpy>=1.24.0
 
+# AI/ML - Sentiment Analysis
+transformers>=4.36.0          # Hugging Face (FinBERT, sentiment models)
+torch>=2.1.0                  # PyTorch backend
+sentencepiece>=0.1.99         # Tokenizer
+textblob>=0.17.1              # Basic sentiment (fallback)
+vaderSentiment>=3.3.2         # Social media sentiment
+
+# AI/ML - Price Prediction
+scikit-learn>=1.3.0           # Classical ML models
+xgboost>=2.0.0                # Gradient boosting
+prophet>=1.1.5                # Facebook time series forecasting
+
+# Data APIs (optional - install as needed)
+# newsapi-python>=0.2.7       # NewsAPI.org
+# praw>=7.7.1                 # Reddit API
+# tweepy>=4.14.0              # Twitter API
+
 # Web UI (optional - only needed for webapp.py)
 flask>=3.0.0
 

@@ -54,41 +54,81 @@ class ThemeData:
 
 @dataclass
 class TickerScore:
-    """Complete scoring data for a ticker."""
+    """Complete scoring data for a ticker (AI-FIRST architecture)."""
     ticker: str
     timestamp: datetime
-    compression: CompressionData
-    smart_money: SmartMoneyData
-    theme: ThemeData
-    total_score: float  # 0-100, weighted combination of all factors
+
+    # AI-first: AI prediction is the primary signal (50% weight)
+    ai_prediction: Optional['AIPredictionData'] = None  # From ai_prediction.py
+
+    # Supporting signals
+    smart_money: SmartMoneyData = None
+    compression: CompressionData = None  # Now 20% weight (reduced from 40%)
+    theme: ThemeData = None
+
+    total_score: float = 0.0  # 0-100, AI-weighted combination
 
     @property
     def is_slingshot_candidate(self) -> bool:
         """
-        Returns True if this ticker meets slingshot criteria:
-        - High compression (coiled spring)
-        - Smart money accumulation
-        - Strong theme/narrative
+        Returns True if this ticker meets AI-first slingshot criteria:
+        - AI predicts bullish (>65 score + UP direction)
+        - Smart money accumulation (>60)
+        - Optional: Technical confirmation (compression >70)
         """
-        return (
-            self.compression.is_compressed and
-            self.smart_money.is_accumulating and
-            self.theme.is_trending and
-            self.total_score > 70
-        )
+        # AI-first logic: prioritize AI prediction
+        if self.ai_prediction:
+            ai_bullish = self.ai_prediction.is_ai_bullish
+            smart_money_ok = self.smart_money.is_accumulating if self.smart_money else False
+
+            return (
+                ai_bullish and
+                smart_money_ok and
+                self.total_score > 70
+            )
+
+        # Fallback to old logic if AI not available
+        if self.compression and self.smart_money and self.theme:
+            return (
+                self.compression.is_compressed and
+                self.smart_money.is_accumulating and
+                self.theme.is_trending and
+                self.total_score > 70
+            )
+
+        return False
 
     def to_dict(self) -> Dict:
         """Convert to dictionary for serialization."""
-        return {
+        result = {
             'ticker': self.ticker,
             'timestamp': self.timestamp.isoformat(),
             'total_score': self.total_score,
-            'compression_score': self.compression.overall_compression_score,
-            'smart_money_score': self.smart_money.overall_smart_money_score,
-            'theme_score': self.theme.overall_theme_score,
             'is_slingshot_candidate': self.is_slingshot_candidate,
-            'themes': self.theme.themes
         }
+
+        # Add AI prediction data if available
+        if self.ai_prediction:
+            result['ai_prediction'] = {
+                'overall_score': self.ai_prediction.overall_ai_score,
+                'news_sentiment': self.ai_prediction.news_sentiment,
+                'social_sentiment': self.ai_prediction.social_sentiment,
+                'price_prediction': self.ai_prediction.price_prediction,
+                'price_direction': self.ai_prediction.price_direction,
+                'confidence': self.ai_prediction.confidence,
+                'recommendation': self.ai_prediction.recommendation
+            }
+
+        # Add traditional scores
+        if self.smart_money:
+            result['smart_money_score'] = self.smart_money.overall_smart_money_score
+        if self.compression:
+            result['compression_score'] = self.compression.overall_compression_score
+        if self.theme:
+            result['theme_score'] = self.theme.overall_theme_score
+            result['themes'] = self.theme.themes
+
+        return result
 
 
 @dataclass
