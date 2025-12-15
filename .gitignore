@@ -76,3 +76,7 @@ memory-bank/
 
 # Snyk Security Extension - AI Rules (auto-generated)
 .cursor/rules/snyk_rules.mdc
+
+# Secret configuration files
+mcp_agent.secrets.yaml
+*.secrets.yaml
